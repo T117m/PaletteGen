@@ -31,6 +31,11 @@ func DisplaImage(filePath string) {
 	)
 
 	tWidth, tHeight, err := term.GetSize(fd)
+	if err != nil {
+		fmt.Println("Unexpected error parsing terminal size:", err)
+		return
+	}
+
 	if tWidth < width*2 || tHeight < height {
 		fmt.Printf("[!] Image too big to display in terminal: %dx%d vs %dx%d\n", width, height, tWidth/2, tHeight)
 		return
