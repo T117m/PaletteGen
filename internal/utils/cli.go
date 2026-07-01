@@ -30,19 +30,19 @@ func DisplaImage(filePath string) {
 		fd = int(os.Stdout.Fd())
 	)
 
+	if !term.IsTerminal(fd) {
+		fmt.Println("Not a terminal")
+		return
+	}
+
 	tWidth, tHeight, err := term.GetSize(fd)
 	if err != nil {
-		fmt.Println("Unexpected error parsing terminal size:", err)
+		fmt.Println("Unexpected error getting terminal size:", err)
 		return
 	}
 
 	if tWidth < width*2 || tHeight < height {
 		fmt.Printf("[!] Image too big to display in terminal: %dx%d vs %dx%d\n", width, height, tWidth/2, tHeight)
-		return
-	}
-
-	if !term.IsTerminal(fd) {
-		fmt.Println("Not a terminal")
 		return
 	}
 
