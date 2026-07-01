@@ -1,22 +1,16 @@
 package core
 
 import (
+	"github.com/T117m/PaletteGen/internal/utils"
+
 	"image/color"
-	"image/jpeg"
 	"log"
-	"os"
 )
 
 func Dominant(filePath string, k int) []color.Color {
-	file, err := os.Open(filePath)
+	img, err := utils.LoadImage(filePath)
 	if err != nil {
-		log.Fatalf("Error opening %s: %s", filePath, err)
-	}
-	defer file.Close()
-
-	img, err := jpeg.Decode(file)
-	if err != nil {
-		log.Fatalf("Error decoding file: %s", err)
+		log.Fatalf("Error loading file: %s", err)
 	}
 
 	var (
