@@ -1,39 +1,53 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/T117m/PaletteGen/internal/core"
 	"github.com/T117m/PaletteGen/internal/utils"
 
+	"flag"
 	"log"
-	"os"
-	"strconv"
 )
 
 func main() {
 	var (
-		filePath string
-		k        = 7
+		kFlag    = flag.Int("k", 5, "desired amount of colors in palette")
+		algoFlag = flag.String("a", "dominant", "preferred generation algotithm. supported algorithms: dominant, mpa")
 	)
 
-	switch len(os.Args) {
-	case 1:
-		log.Fatal("No arguments provided")
-	case 2:
-		filePath = os.Args[1]
-	case 3:
-		ks, err := strconv.Atoi(os.Args[1])
-		if err != nil || k < 0 {
-			log.Fatalf("Please, provide a valid amount of colors")
-		}
-		k = ks
-		filePath = os.Args[2]
-	default:
-		log.Fatal("Unhandled amount of input")
+	flag.Parse()
+
+	var (
+		k    = *kFlag
+		algo = core.Dominant
+	)
+
+	if k <= 0 {
+		log.Fatalf("Please, provide a valid amount of colors")
 	}
 
-	palette := core.Dominant(filePath, k)
+	switch *algoFlag {
+	case "dominant":
+		algo = core.Dominant
+	case "mpa":
+		algo = core.MPA
+		fmt.Println("MPA")
+	default:
+		log.Fatalf("Unknown algortihm %s", *algoFlag)
+	}
 
-	utils.PrintPalette(palette)
-	utils.DisplaImage(filePath)
+	if len(flag.Args()) < 1 {
+		log.Fatal("Provide at least one image path")
+	}
+
+	for _, filePath := range flag.Args() {
+		palette := algo(filePath, k)
+
+		fmt.Println()
+		utils.PrintPalette(palette)
+
+		fmt.Println()
+		utils.DisplaImage(filePath)
+	}
 }
-

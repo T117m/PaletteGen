@@ -10,7 +10,7 @@ import (
 func Dominant(filePath string, k int) []color.Color {
 	img, err := utils.LoadImage(filePath)
 	if err != nil {
-		log.Fatalf("Error loading file: %s", err)
+		log.Fatalf("Error loading image: %s", err)
 	}
 
 	var (
