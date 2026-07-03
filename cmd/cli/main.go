@@ -32,7 +32,6 @@ func main() {
 		algo = core.Dominant
 	case "mpa":
 		algo = core.MPA
-		fmt.Println("MPA")
 	default:
 		log.Fatalf("Unknown algortihm %s", *algoFlag)
 	}

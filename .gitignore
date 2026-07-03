@@ -4,3 +4,4 @@
 *.exe
 *_templ.go
 !doc/cli_screenshot.jpg
+build/*
