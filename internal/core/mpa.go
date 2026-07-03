@@ -1,19 +1,12 @@
 package core
 
 import (
-	"github.com/T117m/PaletteGen/internal/utils"
-
+	"image"
 	"image/color"
-	"log"
 	"math"
 )
 
-func MPA(filePath string, k int) []color.Color {
-	img, err := utils.LoadImage(filePath)
-	if err != nil {
-		log.Fatalf("Error loading image: %s", err)
-	}
-
+func MPA(img image.Image, k int) []color.Color {
 	var (
 		palette  = make([]color.Color, k)
 		colorMap = make(map[color.Color]float64)

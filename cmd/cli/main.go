@@ -41,12 +41,17 @@ func main() {
 	}
 
 	for _, filePath := range flag.Args() {
-		palette := algo(filePath, k)
+		img, err := utils.LoadImage(filePath)
+		if err != nil {
+			log.Printf("Error loading image: %s", err)
+		}
 
-		fmt.Println()
+		palette := algo(img, k)
+
 		utils.PrintPalette(palette)
-
 		fmt.Println()
+
 		utils.DisplaImage(filePath)
+		fmt.Println()
 	}
 }

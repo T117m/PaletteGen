@@ -1,18 +1,11 @@
 package core
 
 import (
-	"github.com/T117m/PaletteGen/internal/utils"
-
+	"image"
 	"image/color"
-	"log"
 )
 
-func Dominant(filePath string, k int) []color.Color {
-	img, err := utils.LoadImage(filePath)
-	if err != nil {
-		log.Fatalf("Error loading image: %s", err)
-	}
-
+func Dominant(img image.Image, k int) []color.Color {
 	var (
 		palette  []color.Color
 		colorMap = make(map[color.Color]uint)
