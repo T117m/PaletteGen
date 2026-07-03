@@ -28,10 +28,12 @@ func main() {
 	}
 
 	switch *algoFlag {
-	case "dominant":
+	case "dominant", "d":
 		algo = core.Dominant
 	case "mpa":
 		algo = core.MPA
+	case "median-cut", "mc":
+		algo = core.MedianCut
 	default:
 		log.Fatalf("Unknown algortihm %s", *algoFlag)
 	}
