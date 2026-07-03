@@ -45,8 +45,8 @@ func medianCut(colors []simpleColor, n int) []simpleColor {
 	}
 
 	var (
-		i, _            = getGreatestRange(colors)
-		clr, nextBucket = cut(sortBy(colors, i))
+		colorRange, _   = getGreatestRange(colors)
+		clr, nextBucket = cut(sortBy(colors, colorRange))
 	)
 
 	return append(medianCut(nextBucket, n-1), clr)
@@ -88,7 +88,7 @@ func getAverage(colors []simpleColor) simpleColor {
 	return avg
 }
 
-func getGreatestRange(colors []simpleColor) (index int, colorRange uint8) {
+func getGreatestRange(colors []simpleColor) (rangeIndex int, clr uint8) {
 	var rRange, gRange, bRange = getRanges(colors)
 
 	if rRange >= gRange && rRange >= bRange {
@@ -132,14 +132,14 @@ func getRanges(colors []simpleColor) (rRange, gRange, bRange uint8) {
 	return rMax - rMin, gMax - gMin, bMax - bMin
 }
 
-func sortBy(colors []simpleColor, clrIndex int) []simpleColor {
+func sortBy(colors []simpleColor, rangeIndex int) []simpleColor {
 	var (
 		temp   = make([][]simpleColor, 256)
 		sorted []simpleColor
 	)
 
 	for _, c := range colors {
-		temp[c[clrIndex]-1] = append(temp[c[clrIndex]-1], c)
+		temp[c[rangeIndex]-1] = append(temp[c[rangeIndex]-1], c)
 	}
 
 	for _, batch := range colors {
