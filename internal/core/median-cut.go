@@ -20,7 +20,7 @@ func MedianCut(img image.Image, k int) []color.Color {
 		for x := range width {
 			var (
 				r, g, b, _ = color.RGBAModel.Convert(img.At(x, y)).RGBA()
-				clr        = simpleColor{uint8(r), uint8(g), uint8(b)}
+				clr        = simpleColor{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8)}
 			)
 
 			colors = append(colors, clr)
@@ -36,7 +36,7 @@ func MedianCut(img image.Image, k int) []color.Color {
 
 // Implements the color.Color interface
 func (c simpleColor) RGBA() (r, g, b, a uint32) {
-	return uint32(c[0]), uint32(c[1]), uint32(c[2]), uint32(255)
+	return uint32(c[0]) << 8, uint32(c[1]) << 8, uint32(c[2]) << 8, uint32(255) << 8
 }
 
 func medianCut(colors []simpleColor, n int) []simpleColor {
@@ -53,8 +53,16 @@ func medianCut(colors []simpleColor, n int) []simpleColor {
 }
 
 func cut(sorted []simpleColor) (average simpleColor, bucket []simpleColor) {
+	l := len(sorted)
+	switch l {
+	case 1:
+		return sorted[0], nil
+	case 0:
+		return simpleColor{}, nil
+	}
+
 	var (
-		mid          = len(sorted) / 2
+		mid          = l / 2
 		left, right  = sorted[:mid], sorted[mid:]
 		_, lGreatest = getGreatestRange(left)
 		_, rGreatest = getGreatestRange(right)
@@ -139,7 +147,7 @@ func sortBy(colors []simpleColor, rangeIndex int) []simpleColor {
 	)
 
 	for _, c := range colors {
-		temp[c[rangeIndex]-1] = append(temp[c[rangeIndex]-1], c)
+		temp[c[rangeIndex]] = append(temp[c[rangeIndex]], c)
 	}
 
 	for _, batch := range colors {

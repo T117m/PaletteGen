@@ -56,5 +56,5 @@ func DisplaImage(filePath string) {
 
 func drawPixel(c color.Color) string {
 	r, g, b, _ := c.RGBA()
-	return fmt.Sprintf("\x1b[38;2;%d;%d;%dm██\x1b[0m", uint8(r), uint8(g), uint8(b))
+	return fmt.Sprintf("\x1b[38;2;%d;%d;%dm██\x1b[0m", uint8(r >> 8), uint8(g >> 8), uint8(b >> 8))
 }
