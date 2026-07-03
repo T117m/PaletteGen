@@ -40,39 +40,24 @@ func (c simpleColor) RGBA() (r, g, b, a uint32) {
 }
 
 func medianCut(colors []simpleColor, n int) []simpleColor {
-	if n <= 0 || len(colors) == 0 {
+	l := len(colors)
+
+	if n <= 0 || l == 0 {
 		return nil
 	}
-
-	var (
-		colorRange, _   = getGreatestRange(colors)
-		clr, nextBucket = cut(sortBy(colors, colorRange))
-	)
-
-	return append(medianCut(nextBucket, n-1), clr)
-}
-
-func cut(sorted []simpleColor) (average simpleColor, bucket []simpleColor) {
-	l := len(sorted)
-	switch l {
-	case 1:
-		return sorted[0], nil
-	case 0:
-		return simpleColor{}, nil
+	if n == 1 || l == 1 {
+		return []simpleColor{getAverage(colors)}
 	}
 
 	var (
-		mid          = l / 2
-		left, right  = sorted[:mid], sorted[mid:]
-		_, lGreatest = getGreatestRange(left)
-		_, rGreatest = getGreatestRange(right)
+		colorRange = getGreatestRange(colors)
+		sorted     = sortBy(colors, colorRange)
+		mid        = l / 2
+		nLeft      = n / 2
+		nRight     = n - nLeft
 	)
 
-	if lGreatest > rGreatest {
-		return getAverage(right), left
-	}
-
-	return getAverage(left), right
+	return append(medianCut(sorted[:mid], nLeft), medianCut(sorted[mid:], nRight)...)
 }
 
 func getAverage(colors []simpleColor) simpleColor {
@@ -96,15 +81,15 @@ func getAverage(colors []simpleColor) simpleColor {
 	return avg
 }
 
-func getGreatestRange(colors []simpleColor) (rangeIndex int, clr uint8) {
+func getGreatestRange(colors []simpleColor) int {
 	var rRange, gRange, bRange = getRanges(colors)
 
 	if rRange >= gRange && rRange >= bRange {
-		return 0, rRange
+		return 0
 	} else if gRange >= rRange && gRange >= bRange {
-		return 1, gRange
+		return 1
 	} else {
-		return 2, bRange
+		return 2
 	}
 }
 
