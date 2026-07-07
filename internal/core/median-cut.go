@@ -46,7 +46,7 @@ func medianCut(colors []simpleColor, n int) []simpleColor {
 		return nil
 	}
 	if n == 1 || l == 1 {
-		return []simpleColor{getAverage(colors)}
+		return []simpleColor{getAverageSimple(colors)}
 	}
 
 	var (
@@ -60,7 +60,7 @@ func medianCut(colors []simpleColor, n int) []simpleColor {
 	return append(medianCut(sorted[:mid], nLeft), medianCut(sorted[mid:], nRight)...)
 }
 
-func getAverage(colors []simpleColor) simpleColor {
+func getAverageSimple(colors []simpleColor) simpleColor {
 	var (
 		r, g, b int
 		avg     simpleColor

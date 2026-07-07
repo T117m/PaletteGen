@@ -33,6 +33,8 @@ func main() {
 		algo = core.MPA
 	case "median-cut", "mc":
 		algo = core.MedianCut
+	case "k-means", "km":
+		algo = core.KMeans
 	default:
 		log.Fatalf("Unknown algortihm %s", *algoFlag)
 	}
