@@ -7,9 +7,9 @@ import (
 
 type simpleColor [3]uint8 // 0 - R, 1 - G, 2 - B
 
-func MedianCut(img image.Image, k int) []color.Color {
+func MedianCut(img image.Image, k int) color.Palette {
 	var (
-		palette []color.Color
+		p color.Palette
 		colors  []simpleColor
 
 		bounds        = img.Bounds()
@@ -28,10 +28,10 @@ func MedianCut(img image.Image, k int) []color.Color {
 	}
 
 	for _, c := range medianCut(colors, k) {
-		palette = append(palette, c)
+		p = append(p, c)
 	}
 
-	return palette
+	return p
 }
 
 // Implements the color.Color interface

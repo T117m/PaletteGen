@@ -1,13 +1,12 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"log"
 
 	"github.com/T117m/PaletteGen/internal/core"
 	"github.com/T117m/PaletteGen/internal/utils"
-
-	"flag"
-	"log"
 )
 
 func main() {

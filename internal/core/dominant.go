@@ -5,9 +5,9 @@ import (
 	"image/color"
 )
 
-func Dominant(img image.Image, k int) []color.Color {
+func Dominant(img image.Image, k int) color.Palette {
 	var (
-		palette  []color.Color
+		p  color.Palette
 		colorMap = make(map[color.Color]uint)
 
 		bounds        = img.Bounds()
@@ -28,10 +28,10 @@ func Dominant(img image.Image, k int) []color.Color {
 
 	for i, j := (height*width)-1, k; i > 0 && j > 0; i-- {
 		if colorMapSorted[i] != nil {
-			palette = append(palette, colorMapSorted[i]...)
+			p = append(p, colorMapSorted[i]...)
 			j -= len(colorMapSorted[i])
 		}
 	}
 
-	return palette[:k]
+	return p[:k]
 }

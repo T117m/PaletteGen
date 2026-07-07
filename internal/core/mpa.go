@@ -6,9 +6,9 @@ import (
 	"math"
 )
 
-func MPA(img image.Image, k int) []color.Color {
+func MPA(img image.Image, k int) color.Palette {
 	var (
-		palette  = make([]color.Color, k)
+		p  = make(color.Palette, k)
 		colorMap = make(map[color.Color]float64)
 
 		bounds        = img.Bounds()
@@ -22,17 +22,17 @@ func MPA(img image.Image, k int) []color.Color {
 	}
 
 	for i := range k {
-		palette[i] = findMax(colorMap)
+		p[i] = findMax(colorMap)
 
-		delete(colorMap, palette[i])
+		delete(colorMap, p[i])
 
 		for c, n := range colorMap {
-			d := distance(c, palette[i])
+			d := distance(c, p[i])
 			colorMap[c] = n / (1 - math.Exp(-0.75*d*d))
 		}
 	}
 
-	return palette
+	return p
 }
 
 func findMax(colorMap map[color.Color]float64) color.Color {

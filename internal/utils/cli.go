@@ -1,12 +1,12 @@
 package utils
 
 import (
-	"golang.org/x/term"
-
 	"fmt"
 	"image/color"
 	"log"
 	"os"
+
+	"golang.org/x/term"
 )
 
 func PrintPalette(p []color.Color) {
