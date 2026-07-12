@@ -3,6 +3,7 @@ package core
 import (
 	"image"
 	"image/color"
+	"math"
 	"math/rand"
 )
 
@@ -10,52 +11,33 @@ func KMeans(img image.Image, k int) color.Palette {
 	var (
 		p color.Palette
 
-		bounds        = img.Bounds()
-		width, height = bounds.Dx(), bounds.Dy()
-
-		centroids = getRandomCentroids(img, k, width, height)
-		converged = false
+		colors     = getColors(img)
+		centroids  = getRandomCentroids(colors, k)
+		iterations = 20
 	)
 
-	for !converged {
+	for range iterations {
 		clusters := make([][]color.Color, k)
 
-		for y := range height {
-			for x := range width {
-				var (
-					pixel = img.At(x, y)
-					clr   = color.RGBAModel.Convert(pixel)
-
-					closestIndex = 0
-					minDistance  = distance(clr, centroids[0])
-				)
-
-				for i := 1; i < k; i++ {
-					d := distance(clr, centroids[i])
-
-					if d < minDistance {
-						minDistance = d
-						closestIndex = i
-					}
-				}
-
-				clusters[closestIndex] = append(clusters[closestIndex], clr)
-			}
+		for _, clr := range colors {
+			idx := findClosestCentroid(clr, centroids)
+			clusters[idx] = append(clusters[idx], clr)
 		}
 
 		newCentroids := make([]color.Color, k)
 		for i := range k {
 			if len(clusters[i]) == 0 {
-				converged = true
-				break
+				newCentroids[i] = colors[rand.Intn(len(colors))]
+			} else {
+				newCentroids[i] = getAverage(clusters[i])
 			}
-
-			newCentroids[i] = getAverage(clusters[i])
 		}
 
-		if !converged {
-			converged = checkConvergence(&centroids, newCentroids)
+		if checkConvergence(&centroids, newCentroids) {
+			break
 		}
+
+		centroids = newCentroids
 	}
 
 	for _, c := range centroids {
@@ -65,14 +47,56 @@ func KMeans(img image.Image, k int) color.Palette {
 	return p
 }
 
+func findClosestCentroid(clr color.Color, centroids []color.Color) int {
+	var (
+		closestIndex = 0
+		minDistance  = distance(clr, centroids[0])
+	)
+
+	for i := 1; i < len(centroids); i++ {
+		d := distance(clr, centroids[i])
+
+		if d < minDistance {
+			minDistance = d
+			closestIndex = i
+		}
+	}
+
+	return closestIndex
+}
+
+func getColors(img image.Image) []color.Color {
+	var (
+		colors []color.Color
+
+		bounds        = img.Bounds()
+		width, height = bounds.Dx(), bounds.Dy()
+	)
+
+	for y := range height {
+		for x := range width {
+			colors = append(colors, color.RGBAModel.Convert(img.At(x, y)))
+		}
+	}
+
+	return colors
+}
+
 func checkConvergence(old *[]color.Color, nu []color.Color) bool {
-	converged := true
+	var (
+		converged = true
+		eps       = 1.0
+	)
 
 	for i, oldC := range *old {
 		oldR, oldG, oldB, _ := oldC.RGBA()
 		newR, newG, newB, _ := nu[i].RGBA()
 
-		if oldR != newR || oldG != newG || oldB != newB {
+		difR := math.Abs(float64(int(oldR>>8) - int(newR>>8)))
+		difG := math.Abs(float64(int(oldG>>8) - int(newG>>8)))
+		difB := math.Abs(float64(int(oldB>>8) - int(newB>>8)))
+
+		if difR > eps || difG > eps || difB > eps {
 			(*old)[i] = nu[i]
 			converged = false
 		}
@@ -104,12 +128,11 @@ func getAverage(colors []color.Color) color.Color {
 	return avg
 }
 
-func getRandomCentroids(img image.Image, k, width, height int) []color.Color {
+func getRandomCentroids(colors []color.Color, k int) []color.Color {
 	centroids := make([]color.Color, k)
 
 	for i := range k {
-		pixel := img.At(rand.Intn(width-1), rand.Intn(height-1))
-		centroids[i] = color.RGBAModel.Convert(pixel)
+		centroids[i] = colors[rand.Intn(len(colors))]
 	}
 
 	return centroids
