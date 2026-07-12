@@ -12,7 +12,7 @@ func KMeans(img image.Image, k int) color.Palette {
 		p color.Palette
 
 		colors     = getColors(img)
-		centroids  = getRandomCentroids(colors, k)
+		centroids  = kMeansPlusPlus(colors, k)
 		iterations = 20
 	)
 
@@ -20,7 +20,7 @@ func KMeans(img image.Image, k int) color.Palette {
 		clusters := make([][]color.Color, k)
 
 		for _, clr := range colors {
-			idx := findClosestCentroid(clr, centroids)
+			idx, _ := findClosestCentroid(clr, centroids)
 			clusters[idx] = append(clusters[idx], clr)
 		}
 
@@ -47,7 +47,7 @@ func KMeans(img image.Image, k int) color.Palette {
 	return p
 }
 
-func findClosestCentroid(clr color.Color, centroids []color.Color) int {
+func findClosestCentroid(clr color.Color, centroids []color.Color) (Index int, Distance float64) {
 	var (
 		closestIndex = 0
 		minDistance  = distance(clr, centroids[0])
@@ -62,7 +62,7 @@ func findClosestCentroid(clr color.Color, centroids []color.Color) int {
 		}
 	}
 
-	return closestIndex
+	return closestIndex, minDistance
 }
 
 func getColors(img image.Image) []color.Color {
@@ -128,12 +128,40 @@ func getAverage(colors []color.Color) color.Color {
 	return avg
 }
 
-func getRandomCentroids(colors []color.Color, k int) []color.Color {
-	centroids := make([]color.Color, k)
+func kMeansPlusPlus(colors []color.Color, k int) []color.Color {
+	var centroids []color.Color
+	centroids = append(centroids, colors[rand.Intn(len(colors))])
 
-	for i := range k {
-		centroids[i] = colors[rand.Intn(len(colors))]
+	for len(centroids) < k {
+		var distances []float64
+
+		for i := range colors {
+			_, d := findClosestCentroid(colors[i], centroids)
+			distances = append(distances, d*d)
+		}
+
+		var (
+			total              = sum(distances)
+			threshold          = rand.Float64() * total
+			cumulative float64 = 0
+		)
+
+		for i := range colors {
+			cumulative += distances[i]
+			if cumulative >= threshold {
+				centroids = append(centroids, colors[i])
+				break
+			}
+		}
 	}
 
 	return centroids
+}
+
+func sum(arr []float64) float64 {
+	var s float64
+	for _, v := range arr {
+		s += v
+	}
+	return s
 }
