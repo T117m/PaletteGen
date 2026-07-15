@@ -9,6 +9,10 @@ import (
 	"golang.org/x/term"
 )
 
+const (
+	ErrImgTooBig = "Слишком большое изображение для отображения в терминале"
+)
+
 func PrintPalette(p []color.Color) {
 	for i, c := range p {
 		if c != nil {
@@ -17,7 +21,7 @@ func PrintPalette(p []color.Color) {
 	}
 }
 
-func DisplaImage(filePath string) {
+func DisplayImage(filePath string) {
 	img, err := LoadImage(filePath)
 	if err != nil {
 		log.Fatalf("Error loading image to display: %s", err)
@@ -31,7 +35,6 @@ func DisplaImage(filePath string) {
 	)
 
 	if !term.IsTerminal(fd) {
-		fmt.Println("Not a terminal")
 		return
 	}
 
@@ -41,8 +44,8 @@ func DisplaImage(filePath string) {
 		return
 	}
 
-	if tWidth < width*2 || tHeight < height {
-		fmt.Printf("[!] Image too big to display in terminal: %dx%d vs %dx%d\n", width, height, tWidth/2, tHeight)
+	if tWidth < width*2 || tHeight*2 < height {
+		fmt.Printf("[!] %s: %dx%d vs %dx%d\n", ErrImgTooBig, width, height, tWidth/2, tHeight)
 		return
 	}
 

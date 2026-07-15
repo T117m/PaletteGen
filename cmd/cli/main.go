@@ -9,10 +9,21 @@ import (
 	"github.com/T117m/PaletteGen/internal/utils"
 )
 
+const (
+	DescK          = "Количество цветов в палитре"
+	DescAlgo       = "Алгоритм генерации палитры"
+	AvailableAlgos = "[dominant/d | mpa | median-cut/mc | k-means/km]"
+)
+
 func main() {
 	var (
-		kFlag    = flag.Int("k", 5, "desired amount of colors in palette")
-		algoFlag = flag.String("a", "dominant", "preferred generation algotithm. supported algorithms: dominant, mpa")
+		kFlag = flag.Int("k", 5, DescK)
+
+		algoFlag = flag.String("a", "dominant", fmt.Sprint(
+			DescAlgo,
+			" ",
+			AvailableAlgos,
+		))
 	)
 
 	flag.Parse()
@@ -23,7 +34,8 @@ func main() {
 	)
 
 	if k <= 0 {
-		log.Fatalf("Please, provide a valid amount of colors")
+		fmt.Printf("Пожалуйста, укажите нормальное количество цветов")
+		return
 	}
 
 	switch *algoFlag {
@@ -36,25 +48,29 @@ func main() {
 	case "k-means", "km":
 		algo = core.KMeans
 	default:
-		log.Fatalf("Unknown algortihm %s", *algoFlag)
+		fmt.Printf(
+			"Неизвестный алгоритм: %s\nДоступные алгоритмы: %s",
+			*algoFlag,
+			AvailableAlgos,
+		)
+		return
 	}
 
 	if len(flag.Args()) < 1 {
-		log.Fatal("Provide at least one image path")
+		log.Fatal("Предоставьте хотя бы одно изображение")
 	}
 
 	for _, filePath := range flag.Args() {
 		img, err := utils.LoadImage(filePath)
 		if err != nil {
-			log.Printf("Error loading image: %s", err)
+			fmt.Printf("Ошибка при загрузке изображения: %s", err)
+			continue
 		}
 
-		palette := algo(img, k)
-
-		utils.PrintPalette(palette)
+		utils.DisplayImage(filePath)
 		fmt.Println()
 
-		utils.DisplaImage(filePath)
+		utils.PrintPalette(algo(img, k))
 		fmt.Println()
 	}
 }
