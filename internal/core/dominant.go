@@ -10,8 +10,7 @@ func Dominant(img image.Image, k int) color.Palette {
 		p  color.Palette
 		colorMap = make(map[color.Color]uint)
 
-		bounds        = img.Bounds()
-		width, height = bounds.Dx(), bounds.Dy()
+		width, height = getBounds(img)
 
 		colorMapSorted = make([][]color.Color, width*height)
 	)

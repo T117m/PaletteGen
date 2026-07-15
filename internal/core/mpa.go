@@ -11,8 +11,7 @@ func MPA(img image.Image, k int) color.Palette {
 		p  = make(color.Palette, k)
 		colorMap = make(map[color.Color]float64)
 
-		bounds        = img.Bounds()
-		width, height = bounds.Dx(), bounds.Dy()
+		width, height = getBounds(img)
 	)
 
 	for y := range height {

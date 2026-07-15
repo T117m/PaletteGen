@@ -69,8 +69,7 @@ func getColors(img image.Image) []color.Color {
 	var (
 		colors []color.Color
 
-		bounds        = img.Bounds()
-		width, height = bounds.Dx(), bounds.Dy()
+		width, height = getBounds(img)
 	)
 
 	for y := range height {
