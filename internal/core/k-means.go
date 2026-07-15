@@ -89,12 +89,14 @@ func checkConvergence(old *[]color.Color, nu []color.Color) bool {
 	)
 
 	for i, oldC := range *old {
-		oldR, oldG, oldB, _ := oldC.RGBA()
-		newR, newG, newB, _ := nu[i].RGBA()
+		var (
+			oldR, oldG, oldB, _ = oldC.RGBA()
+			newR, newG, newB, _ = nu[i].RGBA()
 
-		difR := math.Abs(float64(int(oldR>>8) - int(newR>>8)))
-		difG := math.Abs(float64(int(oldG>>8) - int(newG>>8)))
-		difB := math.Abs(float64(int(oldB>>8) - int(newB>>8)))
+			difR = diff(oldR, newR)
+			difG = diff(oldG, newG)
+			difB = diff(oldB, newB)
+		)
 
 		if difR > eps || difG > eps || difB > eps {
 			(*old)[i] = nu[i]
@@ -103,6 +105,10 @@ func checkConvergence(old *[]color.Color, nu []color.Color) bool {
 	}
 
 	return converged
+}
+
+func diff(a, b uint32) float64 {
+	return math.Abs(float64(int(a>>8) - int(b>>8)))
 }
 
 func getAverage(colors []color.Color) color.Color {
