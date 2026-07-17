@@ -40,3 +40,11 @@ func getBounds(img image.Image) (width, height int) {
 	bounds := img.Bounds()
 	return bounds.Dx(), bounds.Dy()
 }
+
+func sum[T float64 | int](arr []T) T {
+	var s T
+	for _, v := range arr {
+		s += v
+	}
+	return s
+}

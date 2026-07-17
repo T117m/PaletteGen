@@ -163,10 +163,3 @@ func kMeansPlusPlus(colors []color.Color, k int) []color.Color {
 	return centroids
 }
 
-func sum(arr []float64) float64 {
-	var s float64
-	for _, v := range arr {
-		s += v
-	}
-	return s
-}
