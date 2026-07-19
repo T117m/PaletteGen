@@ -47,6 +47,8 @@ func main() {
 		algo = core.MedianCut
 	case "k-means", "km":
 		algo = core.KMeans
+	case "octree", "ot":
+		algo = core.OcTree
 	default:
 		fmt.Printf(
 			"Неизвестный алгоритм: %s\nДоступные алгоритмы: %s",
