@@ -9,6 +9,10 @@ import (
 	"image/png"
 	"os"
 	"strings"
+
+	"golang.org/x/image/webp"
+	"golang.org/x/image/tiff"
+	"golang.org/x/image/bmp"
 )
 
 func LoadImage(filePath string) (image.Image, error) {
@@ -35,6 +39,12 @@ func LoadImage(filePath string) (image.Image, error) {
 		img, err = png.Decode(file)
 	case "gif":
 		img, err = gif.Decode(file)
+	case "webp":
+		img, err = webp.Decode(file)
+	case "tiff":
+		img, err = tiff.Decode(file)
+	case "bmp":
+		img, err = bmp.Decode(file)
 	default:
 		return nil, fmt.Errorf("Неподдерживаемый формат: %s", extension)
 	}
