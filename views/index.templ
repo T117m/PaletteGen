@@ -7,7 +7,7 @@ templ Index() {
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
-			<link rel="stylesheet" href="/public/styles.css"/>
+			<link rel="stylesheet" href="/static/css/styles.css"/>
 			<title>Генерация палитр</title>
 		</head>
 		<body>
@@ -23,8 +23,7 @@ templ Index() {
 				<dt><strong>K-Means</strong> (с инициализацией K‑Means++)</dt>
 				<dd>Итеративный кластерный алгоритм. Разбивает пиксели на K групп, минимизируя сумму квадратов расстояний до центров кластеров. Обеспечивает высокое качество палитры, но работает медленнее остальных.</dd>
 				<dt><strong>OcTree</strong> (Октарное дерево)</dt>
-				<dd>Иерархическая структура, разбивающая цветовое пространство на кубы. Быстрый и эффективный алгоритм, дающий хороший баланс между скоростью и качеством. Широко используется в графических редакторах.</dd>
-				<dd style="color: red">Важно: данный алгоритм не гарантирует возврат требуемого количества цветов!</dd>
+				<dd>Иерархическая структура, разбивающая цветовое пространство на кубы. Быстрый и эффективный алгоритм, дающий хороший баланс между скоростью и качеством. Широко используется в графических редакторах. <span style="color: red">Важно: данный алгоритм не гарантирует возврат требуемого количества цветов!</span></dd>
 			</dl>
 			<form
 				hx-post="upload"

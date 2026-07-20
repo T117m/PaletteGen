@@ -1,0 +1,91 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    color: #333;
+}
+
+h1, h2 {
+    font-weight: 300;
+    margin-top: 0.5em;
+}
+
+dl {
+    margin: 20px 0;
+}
+dt {
+    font-weight: bold;
+    margin-top: 12px;
+}
+dd {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+dd[style*="color: red"] {
+    color: #c00;
+}
+
+form {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+}
+form p {
+    margin: 10px 0;
+}
+label {
+    display: inline-block;
+    width: 150px;
+    font-weight: 600;
+}
+input[type="file"],
+input[type="number"],
+select {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+button {
+    padding: 8px 24px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+button:hover {
+    background: #0056b3;
+}
+
+#fetch-result .spinner {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+}
+#fetch-result .spinner svg {
+    animation: spin 1s linear infinite;
+    width: 50px;
+    height: 50px;
+}
+#fetch-result .spinner p {
+    margin: 10px 0 0;
+    font-size: 16px;
+    color: #555;
+}
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+#fetch-result.htmx-request .spinner {
+    display: block;
+}
+#fetch-result.htmx-request > :not(.spinner) {
+    display: none;
+}
