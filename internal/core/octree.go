@@ -5,47 +5,71 @@ import (
 	"image/color"
 )
 
-type ocTreeNode struct {
-	children [8]*ocTreeNode
-	count    int
-	r, g, b  int
-	isLeaf   bool
-	next *ocTreeNode
-}
-
 const depth = 7
 
+type (
+	ocTreeNode struct {
+		children  [8]*ocTreeNode
+		count     int
+		r, g, b   int
+		isLeaf    bool
+		level     int
+		next      *ocTreeNode
+		leafCount int
+	}
+
+	ocTree struct {
+		root      *ocTreeNode
+		reducible [depth]*ocTreeNode
+		leafs     int
+	}
+)
+
+// OcTree строит палитру из k цветов с помощью октодерева
 func OcTree(img image.Image, k int) color.Palette {
 	var (
+		tree = &ocTree{root: nil}
+
 		width, height = getBounds(img)
 
-		tree, insert, leafsCount = newOcTree()
+		k57 = k
+		p color.Palette
 	)
 
 	for y := range height {
 		for x := range width {
-			insert(color.RGBAModel.Convert(img.At(x, y)))
+			tree.insert(&tree.root, img.At(x, y), 0)
 		}
 	}
 
-	if *leafsCount > k {
-		tree.reduce(leafsCount, k)
+	if k < 8 && k != 1 {
+		k = 8
 	}
 
-	return tree.getPalette()
+	for tree.leafs > k {
+		tree.reduce()
+	}
+
+	p = tree.root.getPalette()
+
+	if k57 >= 5 && k57 <= 7 {
+		return p[:k57]
+	}
+
+	return p
 }
 
-func (tree *ocTreeNode) getPalette() color.Palette {
-	if tree == nil {
+func (node *ocTreeNode) getPalette() color.Palette {
+	if node == nil {
 		return nil
 	}
 
-	if tree.isLeaf {
+	if node.isLeaf {
 		return color.Palette{
 			color.RGBA{
-				uint8(tree.r / tree.count),
-				uint8(tree.g / tree.count),
-				uint8(tree.b / tree.count),
+				uint8(node.r / node.count),
+				uint8(node.g / node.count),
+				uint8(node.b / node.count),
 				255,
 			},
 		}
@@ -53,7 +77,7 @@ func (tree *ocTreeNode) getPalette() color.Palette {
 
 	var p color.Palette
 
-	for _, child := range tree.children {
+	for _, child := range node.children {
 		if child != nil {
 			p = append(p, child.getPalette()...)
 		}
@@ -62,136 +86,102 @@ func (tree *ocTreeNode) getPalette() color.Palette {
 	return p
 }
 
-func (tree *ocTreeNode) reduce(leafs *int, k int) {
-	for *leafs > k {
-		candidate := tree.findReductionCandidate()
+func (tree *ocTree) reduce() {
+	level := depth - 1
 
-		if candidate == nil {
-			break
-		}
-
-		totalR, totalG, totalB, totalCount, childrenCount := 0, 0, 0, 0, 0
-
-		for _, child := range candidate.children {
-			if child != nil {
-				totalR += child.r
-				totalG += child.g
-				totalB += child.b
-				totalCount += child.count
-				childrenCount++
-			}
-		}
-
-		candidate.isLeaf = true
-		candidate.r = totalR
-		candidate.g = totalG
-		candidate.b = totalB
-		candidate.count = totalCount
-		candidate.children = [8]*ocTreeNode{}
-
-		*leafs -= childrenCount - 1
+	for level >= 0 && tree.reducible[level] == nil {
+		level--
 	}
-}
-
-func (node *ocTreeNode) findReductionCandidate() *ocTreeNode {
-	if node == nil || node.isLeaf {
-		return nil
+	if level < 0 {
+		return
 	}
 
-	var (
-		allLeaves = true
+	node := tree.reducible[level]
+	tree.reducible[level] = node.next
 
-		best       *ocTreeNode
-		bestWeight = int(^uint(0) >> 1)
-	)
-
-	for _, child := range node.children {
+	sum := 0
+	for i := range 8 {
+		child := node.children[i]
 		if child == nil {
 			continue
 		}
-
+		sum += child.leafCount
 		if !child.isLeaf {
-			allLeaves = false
-			candidate := child.findReductionCandidate()
+			tree.removeFromReducible(level+1, child)
+		}
+		node.children[i] = nil
+	}
 
-			if candidate != nil && candidate.count < bestWeight {
-				best = candidate
-				bestWeight = candidate.count
-			}
+	node.isLeaf = true
+	node.leafCount = 1
+	tree.leafs = tree.leafs - sum + 1
+}
+
+func (tree *ocTree) removeFromReducible(level int, node *ocTreeNode) {
+	if level < 0 || level >= depth || node == nil {
+		return
+	}
+
+	if tree.reducible[level] == node {
+		tree.reducible[level] = node.next
+	} else {
+		prev := tree.reducible[level]
+
+		for prev != nil && prev.next != node {
+			prev = prev.next
+		}
+
+		if prev != nil {
+			prev.next = node.next
 		}
 	}
 
-	if allLeaves {
-		weight := 0
-
+	if !node.isLeaf {
 		for _, child := range node.children {
-			if child != nil {
-				weight += child.count
+			if child != nil && !child.isLeaf {
+				tree.removeFromReducible(level+1, child)
 			}
 		}
-
-		if weight < bestWeight {
-			best = node
-			bestWeight = weight
-		}
 	}
-
-	return best
 }
 
-func newOcTree() (head *ocTreeNode, insertFunc func(color.Color), leafs *int) {
-	var (
-		insert func(node *ocTreeNode, c color.Color, lvl, maxLvl int)
-		sum    = 0
-	)
+func (tree *ocTree) insert(node **ocTreeNode, c color.Color, level int) {
+	if *node == nil {
+		*node = tree.newNode(level)
+	}
+	n := *node
 
-	insert = func(node *ocTreeNode, c color.Color, lvl, maxLvl int) {
-		var (
-			r, g, b, _ = c.RGBA()
-			r8, g8, b8 = uint8(r >> 8), uint8(g >> 8), uint8(b >> 8)
-		)
+	r, g, b, _ := c.RGBA()
+	r8, g8, b8 := int(r>>8), int(g>>8), int(b>>8)
 
-		if lvl == maxLvl {
-			if node.count == 0 {
-				sum++
-			}
+	n.count++
+	n.r += r8
+	n.g += g8
+	n.b += b8
 
-			node.count++
-			node.r += int(r8)
-			node.g += int(g8)
-			node.b += int(b8)
-			node.isLeaf = true
-
-			return
-		}
-
-		var (
-			bit  = depth - lvl
-			rBit = checkBit(r8, bit)
-			gBit = checkBit(g8, bit)
-			bBit = checkBit(b8, bit)
-
-			index = rBit*4 + gBit*2 + bBit
-		)
-
-		if node.children[index] == nil {
-			node.children[index] = new(ocTreeNode)
-		}
-
-		insert(node.children[index], c, lvl+1, maxLvl)
+	if n.isLeaf {
+		return
 	}
 
-	head = new(ocTreeNode)
-
-	insertFunc = func(c color.Color) {
-		insert(head, c, 0, depth)
-	}
-
-	leafs = &sum
-
-	return
+	bit := 7 - level
+	index := ((r8>>bit)&1)<<2 | ((g8>>bit)&1)<<1 | ((b8 >> bit) & 1)
+	tree.insert(&n.children[index], c, level+1)
 }
 
-func checkBit(ch uint8, bit int) int {
-	return int((ch >> bit) & 1)
+func (tree *ocTree) newNode(level int) *ocTreeNode {
+	node := &ocTreeNode{
+		level:     level,
+		leafCount: 0,
+	}
+
+	if level == depth {
+		node.isLeaf = true
+		node.leafCount = 1
+		tree.leafs++
+	} else {
+		node.next = tree.reducible[level]
+		tree.reducible[level] = node
+	}
+
+	return node
 }
