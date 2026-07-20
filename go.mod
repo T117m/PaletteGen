@@ -7,4 +7,7 @@ require (
 	golang.org/x/term v0.44.0
 )
 
-require golang.org/x/sys v0.46.0 // indirect
+require (
+	github.com/a-h/templ v0.3.1020 // indirect
+	golang.org/x/sys v0.46.0 // indirect
+)

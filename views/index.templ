@@ -1,0 +1,74 @@
+package views
+
+templ Index() {
+	<!DOCTYPE html>
+	<html lang="ru">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
+			<link rel="stylesheet" href="/public/styles.css"/>
+			<title>Генерация палитр</title>
+		</head>
+		<body>
+			<h1>Генерация палитры по изображению</h1>
+			<h2>Доступные алгоритмы</h2>
+			<dl>
+				<dt><strong>Dominant</strong></dt>
+				<dd>Выбирает самые частые цвета в изображении. Быстрый, но может отдавать предпочтение фону, игнорируя мелкие детали.</dd>
+				<dt><strong>MPA</strong> (Modified Popularity Algorithm)</dt>
+				<dd>Улучшенная версия Dominant. Штрафует похожие оттенки, чтобы палитра была более разнообразной и не состояла из одного доминирующего цвета.</dd>
+				<dt><strong>Median-Cut</strong></dt>
+				<dd>Рекурсивно делит цветовое пространство на области с равным количеством пикселей. Даёт сбалансированную палитру, хорошо представляет и фон, и детали.</dd>
+				<dt><strong>K-Means</strong> (с инициализацией K‑Means++)</dt>
+				<dd>Итеративный кластерный алгоритм. Разбивает пиксели на K групп, минимизируя сумму квадратов расстояний до центров кластеров. Обеспечивает высокое качество палитры, но работает медленнее остальных.</dd>
+				<dt><strong>OcTree</strong> (Октарное дерево)</dt>
+				<dd>Иерархическая структура, разбивающая цветовое пространство на кубы. Быстрый и эффективный алгоритм, дающий хороший баланс между скоростью и качеством. Широко используется в графических редакторах.</dd>
+				<dd style="color: red">Важно: данный алгоритм не гарантирует возврат требуемого количества цветов!</dd>
+			</dl>
+			<form
+				hx-post="upload"
+				hx-target="closest form"
+				hx-swap="afterend"
+				type="submit"
+				hx-encoding="multipart/form-data"
+			>
+				<p>
+					<label for="image">Изображение:</label>
+					<input
+						type="file"
+						id="image"
+						name="image"
+						accept="image/*"
+						required
+					/>
+				</p>
+				<p>
+					<label for="colors">Количество цветов:</label>
+					<input
+						type="number"
+						id="colors"
+						name="colors"
+						min="1"
+						max="20"
+						value="5"
+						required
+					/>
+				</p>
+				<p>
+					<label for="algorithm">Алгоритм:</label>
+					<select id="algorithm" name="algorithm">
+						<option value="dominant">Dominant</option>
+						<option value="mpa">MPA</option>
+						<option value="mediancut">Median-Cut</option>
+						<option value="kmeans">K-Means</option>
+						<option value="octree">OcTree</option>
+					</select>
+				</p>
+				<p>
+					<button>Сгенерировать</button>
+				</p>
+			</form>
+		</body>
+	</html>
+}
