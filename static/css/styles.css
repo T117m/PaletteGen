@@ -1,38 +1,44 @@
+/* ===== Общие стили (тёмная тема) ===== */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    background: #fff;
-    color: #333;
+    background: #121212;      /* тёмный фон */
+    color: #e0e0e0;           /* светлый текст */
 }
 
 h1, h2 {
     font-weight: 300;
     margin-top: 0.5em;
+    color: #ffffff;
 }
 
+/* ===== Описание алгоритмов ===== */
 dl {
     margin: 20px 0;
 }
 dt {
     font-weight: bold;
     margin-top: 12px;
+    color: #bb86fc;           /* акцентный фиолетовый */
 }
 dd {
     margin-left: 20px;
     margin-bottom: 10px;
+    color: #b0b0b0;
 }
 dd[style*="color: red"] {
-    color: #c00;
+    color: #cf6679 !important; /* мягкий красный для тёмной темы */
 }
 
+/* ===== Форма загрузки ===== */
 form {
     margin: 20px 0;
     padding: 20px;
-    border: 1px solid #ddd;
+    border: 1px solid #333;
     border-radius: 8px;
-    background: #fafafa;
+    background: #1e1e1e;
 }
 form p {
     margin: 10px 0;
@@ -41,29 +47,45 @@ label {
     display: inline-block;
     width: 150px;
     font-weight: 600;
+    color: #ccc;
 }
 input[type="file"],
 input[type="number"],
 select {
     padding: 6px 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #444;
     border-radius: 4px;
+    background: #2a2a2a;
+    color: #e0e0e0;
     font-size: 14px;
+}
+input[type="file"]::file-selector-button {
+    background: #333;
+    color: #e0e0e0;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 4px 12px;
+    cursor: pointer;
+}
+input[type="file"]::file-selector-button:hover {
+    background: #444;
 }
 button {
     padding: 8px 24px;
-    background: #007bff;
-    color: #fff;
+    background: #bb86fc;
+    color: #121212;
     border: none;
     border-radius: 4px;
     font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
     transition: background 0.2s;
 }
 button:hover {
-    background: #0056b3;
+    background: #9a67ea;
 }
 
+/* ===== Спиннер загрузки ===== */
 #fetch-result .spinner {
     display: none;
     text-align: center;
@@ -74,10 +96,13 @@ button:hover {
     width: 50px;
     height: 50px;
 }
+#fetch-result .spinner circle {
+    stroke: #bb86fc;  /* цвет спиннера под тему */
+}
 #fetch-result .spinner p {
     margin: 10px 0 0;
     font-size: 16px;
-    color: #555;
+    color: #aaa;
 }
 @keyframes spin {
     100% { transform: rotate(360deg); }
