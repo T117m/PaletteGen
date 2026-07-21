@@ -4,5 +4,7 @@
 *.exe
 *_templ.go
 !doc/cli_screenshot.jpg
+!doc/web_screenshot1.jpg
+!doc/web_screenshot2.jpg
 build/*
 uploads/*
