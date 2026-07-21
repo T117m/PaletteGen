@@ -12,7 +12,7 @@ import (
 const (
 	DescK          = "Количество цветов в палитре"
 	DescAlgo       = "Алгоритм генерации палитры"
-	AvailableAlgos = "[dominant/d | mpa | median-cut/mc | k-means/km]"
+	AvailableAlgos = "[dominant/d | mpa | median-cut/mc | k-means/km | octree/ot ]"
 )
 
 func main() {

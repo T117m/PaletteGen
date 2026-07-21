@@ -18,10 +18,9 @@ func Generate(w http.ResponseWriter, r *http.Request) {
 
 	var (
 		filePath = r.PostForm.Get("image")
-		rK = r.PostForm.Get("colors")
-		rAlgo = r.PostForm.Get("algorithm")
+		rK       = r.PostForm.Get("colors")
+		rAlgo    = r.PostForm.Get("algorithm")
 	)
-
 
 	k, err := strconv.Atoi(rK)
 	if err != nil {
@@ -56,5 +55,11 @@ func Generate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p := algo(img, k)
+	if p == nil {
+		e := "Не удалось сгенерировать палитру подходящего размера"
+		http.Error(w, e, http.StatusInternalServerError)
+		return
+	}
+
 	views.Result(filePath, p).Render(context.Background(), w)
 }
